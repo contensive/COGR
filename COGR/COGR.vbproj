@@ -67,9 +67,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="addEventClass.vb" />
+    <Compile Include="addEventLargeCal.vb" />
+    <Compile Include="archiveClass.vb" />
+    <Compile Include="calDisplayRemoteMethod.vb" />
     <Compile Include="calendarDisplayClass.vb" />
     <Compile Include="formLoginClass.vb" />
-    <Compile Include="newsStorysClass.vb" />
+    <Compile Include="latestNews.vb" />
+    <Compile Include="pubArchiveClass.vb" />
+    <Compile Include="publicationClass.vb" />
+    <Compile Include="pubStoryClass.vb" />
     <Compile Include="remoteLoginClass.vb" />
     <Compile Include="addonClass.vb" />
     <Compile Include="COGRNews.vb" />
@@ -92,6 +98,7 @@
     </Compile>
     <Compile Include="passwordRecovery.vb" />
     <Compile Include="registrationClass.vb" />
+    <Compile Include="remoteMethodCalEdit.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

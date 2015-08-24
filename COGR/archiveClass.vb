@@ -1,14 +1,12 @@
-﻿
-
-Imports System
+﻿Imports System
 Imports System.Collections.Generic
 Imports System.Text
 Imports Contensive.BaseClasses
 
-Namespace Contensive.Addons.NewsStoryList
+Namespace Contensive.Addons.COGR
 
+    Public Class archiveClass
 
-    Public Class newsStorysClass
         Inherits AddonBaseClass
         '
         '
@@ -28,37 +26,55 @@ Namespace Contensive.Addons.NewsStoryList
                 Dim histCount As Integer = 0
                 Dim exitLoop As Boolean = False
                 Dim cs As BaseClasses.CPCSBaseClass = CP.CSNew()
-
-                layout.OpenLayout("News Story List")
+                Dim storyDate As Date = New Date(2000, 6, 9)
+                Dim minDate As Date = New Date(2000, 6, 9)
+                layout.OpenLayout("Publications")
+                Dim brief As String
+                Dim archive As Boolean = False
                 '                
 
-                If cs.Open("story List", , "id Desc") Then
+                If cs.Open("Publications", "archive = 1 and  pubDate <= " & CP.Db.EncodeSQLDate(Now), "pubDate Desc") Then
                     storyCnt = CP.Doc.GetInteger("numberOfStories")
+                    If cs.GetBoolean("archive") = True Then
+
+                    End If
+                    If storyCnt = 0 Then
+                        storyCnt = 5
+                    End If
 
                     exitLoop = False
 
                     Do
+
                         '
                         histCount += 1
-                        header = cs.GetText("Name")
-                        breif = cs.GetText("brief")
-                        image = cs.GetText("imageFilename")
+                        header = cs.GetEditLink() & cs.GetText("Name")
+                        storyDate = cs.GetDate("pubDate")
                         link = cs.GetText("link")
+                        brief = cs.GetText("brief")
                         '
-                        blockLayout.Load(layout.GetOuter(".newsArticle"))
-                        blockLayout.SetInner("#cssThumImg", "<img src=""" & CP.Site.FilePath & image & """ alt="""" />")
+                        blockLayout.Load(layout.GetInner("#pubTabList"))
+
                         '<a href="#" id="cssTitle">Tissue Recipient and News Float Rider Adam Teller is featured in article on Rose Parade Float</a>
-                        If link = "" Then
-                            blockLayout.SetOuter("#cssTitle", header)
+                        If (storyDate <= minDate) Then
+                            blockLayout.SetOuter("#ndate", storyDate)
                         Else
-                            blockLayout.SetOuter("#cssTitle", "<a target=""_blank"" href=""" & link & """ id=""cssTitle"">" & header & "</a>")
+                            blockLayout.SetOuter("#ndate", "<div class=""date-published"" id=""ndate"">" & storyDate & "</div>")
                         End If
-                        blockLayout.SetInner("#cssText", breif)
-                        If link = "" Then
-                            blockLayout.SetOuter(".articleURL", "")
+                        If brief = "" And link <> "" Then
+                            blockLayout.SetOuter("#pubTitle", " <a target=""_blank"" href=""" & link & """ id=""ltag"">" & header & "</a>")
                         Else
-                            blockLayout.SetInner(".articleURL", "<a target=""_blank"" href=""" & link & """>Read More</a>")
+                            blockLayout.SetOuter("#pubTitle", " <a href=""/Publication-Archives?newsId=" & cs.GetInteger("id") & """ id=""ltag"">" & header & "</a>")
                         End If
+
+
+                        'If link = "" Then
+                        '    blockLayout.SetOuter("#ltag", header)
+                        'Else
+                        '    blockLayout.SetOuter("#ltag", " <a href=""#"" id=""ltag"">" & header & "</a>")
+                        'End If
+
+
                         '
                         tmpHtml &= blockLayout.GetHtml
                         '
@@ -76,7 +92,7 @@ Namespace Contensive.Addons.NewsStoryList
                 ' read a table
                 ' end do
 
-                layout.SetInner(".newsFeedBox", tmpHtml)
+                layout.SetInner("#pubTabList", tmpHtml)
 
                 returnHtml = layout.GetHtml
             Catch ex As Exception
@@ -86,4 +102,3 @@ Namespace Contensive.Addons.NewsStoryList
         End Function
     End Class
 End Namespace
-

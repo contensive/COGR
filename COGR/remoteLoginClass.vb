@@ -43,10 +43,10 @@ Namespace Contensive.Addons.COGR
                             message = "Error"
                         End If
                     Else
-                        message = "Error Login1"
+                        message = "Error"
                     End If
                 Else
-                    message = "Error Login2"
+                    message = "Error"
                 End If
                 Call cs.Close()
 

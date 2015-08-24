@@ -1,4 +1,5 @@
-﻿Imports System
+﻿
+Imports System
 Imports System.Collections.Generic
 Imports System.Text
 Imports Contensive.BaseClasses
@@ -7,7 +8,7 @@ Namespace Contensive.Addons.COGR
     '
     ' Sample Vb addon
     '
-    Public Class addEventClass
+    Public Class addEventLargeCal
         Inherits AddonBaseClass
         '
 
@@ -18,9 +19,12 @@ Namespace Contensive.Addons.COGR
             Try
                 Dim message As String = String.Empty
                 '
-                Dim title As String = CP.Doc.GetText("title")
-                Dim strStartDate As String = CP.Doc.GetText("startDateString") ' yyyy-mm-dd mm/dd/yyyy
-                Dim strEndDate As String = CP.Doc.GetText("endDateString")
+                Dim title As String = CP.Doc.GetText("tl")
+                Dim strStartDate As String = CP.Doc.GetText("sd") ' yyyy-mm-dd mm/dd/yyyy
+                Dim strEndDate As String = CP.Doc.GetText("ed")
+                Dim strStartTime As String = CP.Doc.GetText("st")
+                Dim strEndTime As String = CP.Doc.GetText("et")
+                Dim details As String = CP.Doc.GetText("det")
                 'Dim eventDescription As String = CP.Doc.GetText("description")
                 '
 
@@ -28,6 +32,8 @@ Namespace Contensive.Addons.COGR
                 '
                 Dim startDate As Date = CP.Utils.EncodeDate(strStartDate.Replace("-", "/"))
                 Dim endDate As Date = CP.Utils.EncodeDate(strEndDate.Replace("-", "/"))
+                Dim startTime As Date = CP.Doc.GetText("st") ''H(:mm)'
+                Dim endTime As Date = CP.Doc.GetText("et") ''H(:mm)'
 
                 '    
                 CP.Utils.AppendLog("CalendarEvent.log", "start date Added:" & strStartDate)
@@ -36,14 +42,16 @@ Namespace Contensive.Addons.COGR
                 ' pull the information using the email
 
                 ' ccCalendarEvents
-
+                ' timeFormat:  H(:mm)' // uppercase H for 24-hour clock
 
 
                 If csNewEvent.Insert("Calendar Events") Then
                     csNewEvent.SetField("Name", title)
-                    csNewEvent.SetField("title", title)
                     csNewEvent.SetField("StartDate", startDate.ToString)
                     csNewEvent.SetField("EndDate", endDate.ToString)
+                    csNewEvent.SetField("startTime", startTime.ToString)
+                    csNewEvent.SetField("endTime", endTime.ToString)
+                    csNewEvent.SetField("details", details)
                 End If
                 Call CP.Cache.Save(cacheNamecalendarEventList, "")
 

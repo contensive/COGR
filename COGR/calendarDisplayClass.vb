@@ -20,25 +20,34 @@ Namespace Contensive.Addons.COGR
                 Dim cal As BaseClasses.CPBlockBaseClass = CP.BlockNew()
                 Dim cs As BaseClasses.CPCSBaseClass = CP.CSNew()
                 Dim sS As String = ""   '   script string
-                Dim title As String
+                'Dim title As String
                 Dim Name As String
                 Dim EventStartDate As Date = Nothing
                 Dim eventStart As String = ""
                 Dim EventEndDate As Date = Nothing
+                Dim EventDetails As String = ""
                 Dim eventEnd As String = ""
+                Dim EventStartTime As Date = Nothing
+                Dim EventEndTime As Date = Nothing
+
                 '
                 returnHtml = CP.Cache.Read(cacheNamecalendarEventList)
                 If returnHtml = "" Then
                     If cs.Open("Calendar Events") Then
                         Do
-                            title = cs.GetText("title")
-                            Name = cs.GetText("title")
+                            'title = cs.GetText("title")
+                            Name = cs.GetText("name")
                             EventStartDate = encodeMinDate(cs.GetDate("StartDate"))
                             EventEndDate = encodeMinDate(cs.GetDate("EndDate"))
+                            EventStartTime = encodeMinDate(cs.GetDate("StartTime"))
+                            EventEndTime = encodeMinDate(cs.GetDate("EndTime"))
+                            EventDetails = cs.GetText("details")
+                            '
                             If (EventStartDate > Date.MinValue) And (EventEndDate > Date.MinValue) Then
-                                eventStart = EventStartDate.Year() & "-" & (EventStartDate.Month()) & "-" & (EventStartDate.Day())
-                                eventEnd = EventEndDate.Year() & "-" & (EventEndDate.Month()) & "-" & (EventEndDate.Day())
-                                returnHtml &= ",{""title"": """ & CP.Utils.EncodeJavascript(title) & """,""start"": """ & eventStart & """,""end"": """ & eventEnd & """}" '2015-07-13
+                                eventStart = EventStartDate.Year() & "-" & (EventStartDate.Month() + 100).ToString.Substring(1) & "-" & (EventStartDate.Day() + 100).ToString.Substring(1)
+                                eventEnd = EventEndDate.Year() & "-" & (EventEndDate.Month() + 100).ToString.Substring(1) & "-" & (EventEndDate.Day() + 100).ToString.Substring(1)
+
+                                returnHtml &= ",{""title"": """ & CP.Utils.EncodeJavascript(Name) & """,""start"": """ & eventStart & """,""end"": """ & eventEnd & """,""starttime"": """ & EventStartTime & """,""endtime"": """ & EventEndTime & """,""details"": """ & EventDetails & """,""recordid"": """ & cs.GetInteger("id").ToString & """}" '2015-07-13
                             End If
                             Call cs.GoNext()
                         Loop While cs.OK()
