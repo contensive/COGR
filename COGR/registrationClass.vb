@@ -154,6 +154,7 @@ Namespace Contensive.Addons.COGR
                                             & "<br>" _
                                             & ""
                                         CP.Email.sendSystem("COGR Member Registration", emailBody)
+
                                     Else
                                         '
                                         ' add this person to the account found
@@ -174,12 +175,23 @@ Namespace Contensive.Addons.COGR
                                             '
                                             Call csPeopleDomain.SetField("memberid", CP.User.Id)
                                             Call csPeopleDomain.SetField("accountid", accountId)
+                                            Call CP.Group.AddUser("COGR Trade Members", actualUserID)
                                         End If
                                         Call csPeopleDomain.Close()
                                     End If
                                     Call csOrgDomain.Close()
                                     '
                                     '
+                                    If Not CP.User.IsAuthenticated Then
+                                        CP.Cache.Read("Top Menu Anonymous")
+                                    Else
+                                        If menu = "" Then
+                                            CP.Utils.ExecuteAddon("aoMenuing.liMenuClass")
+
+                                        End If
+
+                                    End If
+
                                     '
                                     If Not foundAccount Then
                                         '
@@ -198,6 +210,9 @@ Namespace Contensive.Addons.COGR
                                             Call cs.SetField("organizationId", orgId)
                                         End If
                                         Call cs.Close()
+
+                                        '
+
                                         '
                                         emailBody = "" _
                                             & "" _
