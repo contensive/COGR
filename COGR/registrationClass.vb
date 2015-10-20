@@ -127,6 +127,13 @@ Namespace Contensive.Addons.COGR
                                     Dim accountId As Integer = 0
                                     Dim orgId As Integer = 0
                                     Dim sql As String
+                                    Dim domainSearchString As String
+                                    domainSearchString = CP.Db.EncodeSQLText(actualDomain)
+                                    domainSearchString = domainSearchString.Substring(1)
+                                    domainSearchString = domainSearchString.Substring(0, domainSearchString.Length - 1)
+
+                                    '    this is the string
+                                    '    '%this is the string%'
                                     sql = "select" _
                                         & " a.Name" _
                                         & " ,a.Id" _
@@ -137,7 +144,11 @@ Namespace Contensive.Addons.COGR
                                         & " from organizations as a" _
                                         & " left join mmMembershipOrganizationRules as b on a.id = b.orgId" _
                                         & " " _
-                                        & " where (a.domain=" & CP.Db.EncodeSQLText(actualDomain) & ")" _
+                                        & " where " _
+                                        & "(a.domain='" & domainSearchString & "')" _
+                                        & "or(a.domain like '" & domainSearchString & ",%')" _
+                                        & "or(a.domain like '%," & domainSearchString & ",%')" _
+                                        & "or(a.domain like '%," & domainSearchString & "')" _
                                         & " " _
                                         & " order by a.name" _
                                         & " "
