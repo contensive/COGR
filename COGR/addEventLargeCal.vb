@@ -16,9 +16,11 @@ Namespace Contensive.Addons.COGR
         Public Overrides Function Execute(ByVal CP As CPBaseClass) As Object
             Dim returnHtml As String
             Dim csNewEvent As BaseClasses.CPCSBaseClass = CP.CSNew()
+            Dim csEditEvent As BaseClasses.CPCSBaseClass = CP.CSNew()
             Try
                 Dim message As String = String.Empty
                 '
+                Dim id As Integer
                 Dim title As String = CP.Doc.GetText("tl")
                 Dim strStartDate As String = CP.Doc.GetText("sd") ' yyyy-mm-dd mm/dd/yyyy
                 Dim strEndDate As String = CP.Doc.GetText("ed")
@@ -35,6 +37,9 @@ Namespace Contensive.Addons.COGR
                 Dim startTime As Date = CP.Doc.GetText("st") ''H(:mm)'
                 Dim endTime As Date = CP.Doc.GetText("et") ''H(:mm)'
 
+                ' check if exist record id
+                Dim recordId As Integer = CP.Doc.GetInteger("recordid")
+
                 '    
                 CP.Utils.AppendLog("CalendarEvent.log", "start date Added:" & strStartDate)
                 'Dim csNewEvent As BaseClasses.CPCSBaseClass = CP.CSNew()
@@ -44,8 +49,10 @@ Namespace Contensive.Addons.COGR
                 ' ccCalendarEvents
                 ' timeFormat:  H(:mm)' // uppercase H for 24-hour clock
 
+                Dim existRecord As Boolean = False
 
-                If csNewEvent.Insert("Calendar Events") Then
+                If recordId <> 0 Then
+                    existRecord = csNewEvent.Open("Calendar Events", "id=" & recordId)
                     csNewEvent.SetField("Name", title)
                     csNewEvent.SetField("StartDate", startDate.ToString)
                     csNewEvent.SetField("EndDate", endDate.ToString)
@@ -53,6 +60,41 @@ Namespace Contensive.Addons.COGR
                     csNewEvent.SetField("endTime", endTime.ToString)
                     csNewEvent.SetField("details", details)
                 End If
+
+                If Not existRecord Then
+                    csNewEvent.Insert("Calendar Events")
+                    csNewEvent.SetField("Name", title)
+                    csNewEvent.SetField("StartDate", startDate.ToString)
+                    csNewEvent.SetField("EndDate", endDate.ToString)
+                    csNewEvent.SetField("startTime", startTime.ToString)
+                    csNewEvent.SetField("endTime", endTime.ToString)
+                    csNewEvent.SetField("details", details)
+                End If
+
+
+                ''If csNewEvent.Insert("Calendar Events") Then
+                'csNewEvent.SetField("Name", title)
+                'csNewEvent.SetField("StartDate", startDate.ToString)
+                'csNewEvent.SetField("EndDate", endDate.ToString)
+                'csNewEvent.SetField("startTime", startTime.ToString)
+                'csNewEvent.SetField("endTime", endTime.ToString)
+                'csNewEvent.SetField("details", details)
+                ''End If
+                'csNewEvent.Close()
+
+                ''edit event
+
+                'If csEditEvent.OpenRecord("Calendar Events", id = "ID", ) Then
+                '    csEditEvent.SetField("Name", title)
+                '    '    csEditEvent.SetField("StartDate", startDate.ToString)
+                '    '    csEditEvent.SetField("EndDate", endDate.ToString)
+                '    '    csEditEvent.SetField("startTime", startTime.ToString)
+                '    '    csEditEvent.SetField("endTime", endTime.ToString)
+                '    '    csEditEvent.SetField("details", details)
+
+                'End If
+                '
+                '
                 Call CP.Cache.Save(cacheNamecalendarEventList, "")
 
 

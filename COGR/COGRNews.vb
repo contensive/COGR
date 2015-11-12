@@ -23,35 +23,53 @@ Namespace Contensive.Addons.COGR
                 Dim existUser As Boolean = False
                 '            
                 Dim cs As BaseClasses.CPCSBaseClass = CP.CSNew()
-
+                '
                 ' pull the information using the email
-
-                If Not CP.User.IsAuthenticated Then
-
-                    existUser = csNewMember.Open("People", "email = " & CP.Db.EncodeSQLText(NewsEmail))
-                    If Not existUser Then
+                '
+                If Not String.IsNullOrEmpty(NewsEmail) Then
+                    If Not CP.User.IsAuthenticated Then
+                        existUser = csNewMember.Open("People", "email = " & CP.Db.EncodeSQLText(NewsEmail))
+                        If Not existUser Then
+                            Call csNewMember.Close()
+                            csNewMember.Insert("People")
+                            Call csNewMember.SetField("email", NewsEmail)
+                            Call csNewMember.SetField("name", NewsName)
+                        Else
+                            '
+                            ' this user already exists, we cannot update their record
+                            '
+                        End If
+                        actualUserID = csNewMember.GetInteger("id")
+                        CP.Group.AddUser("Newsletter", actualUserID)
                         Call csNewMember.Close()
-                        csNewMember.Insert("People")
+                    Else
+                        '
+                        ' verify they have an email address
+                        '
+                        actualUserID = CP.User.Id
+                        If String.IsNullOrEmpty(CP.User.Email) Then
+                            If csNewMember.Open("People", "id=" & actualUserID) Then
+                                csNewMember.SetField("name", NewsName)
+                                csNewMember.SetField("email", NewsEmail)
+                            End If
+                            csNewMember.Close()
+                        End If
+                        CP.Group.AddUser("Newsletter", actualUserID)
                     End If
 
-                    actualUserID = csNewMember.GetInteger("id")
-                    Call csNewMember.SetField("email", NewsEmail)
-                    Call csNewMember.SetField("name", NewsName)
-                    CP.Group.AddUser("Newsletter", actualUserID)
-                    Call csNewMember.Close()
-                Else
-                    CP.Group.AddUser("Newsletter", CP.User.Id)
+                    emailBody = "" _
+                                                 & "<br>Full Name:" & NewsName _
+                                                 & "<br>Email: " & NewsEmail _
+                                                 & "<br>" _
+                                                 & ""
+                    CP.Email.sendSystem("COGR Listserv Registration", emailBody)
+                    '
+                    CP.Email.sendSystem("COGR Listserv Auto Responder", , actualUserID)
+
+                    CP.Utils.AppendLog("NewsletterSignupLog.log", "Subscriber to newsletters:" & emailBody)
+                    'Call csNewMember.Close()
+
                 End If
-                'If csNewMember.Insert("People") Then
-                '    actualUserID = csNewMember.GetInteger("id")
-                '    Call csNewMember.SetField("email", NewsEmail)
-                '    Call csNewMember.SetField("name", NewsName)
-                'End If
-                'CP.Group.AddUser("Newsletter", actualUserID)
-
-                CP.Utils.AppendLog("NewsletterSignupLog.log", "Subscriber to newsletters:" & NewsName)
-                'Call csNewMember.Close()
-
                 returnHtml = "ok"
             Catch ex As Exception
                 errorReport(CP, ex, "execute")
