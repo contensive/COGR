@@ -11,56 +11,56 @@ Namespace Contensive.Addons.COGR
     Public Class calendarDisplayClass
         Inherits AddonBaseClass
         '
+        '[
+        '    {
+        '        "title": "My Brother Mark's Birthday",
+        '        "start": "2015-12-05",
+        '        "end": "2015-12-05",
+        '        "starttime": "12:00:00 AM",
+        '        "endtime": "12:00:00 AM",
+        '        "details": "My Brother Mark's Birthday",
+        '        "recordid": "102"
+        '    },
 
+        Public Class calendarEventClass
+            Public title As String
+            Public start As Date
+            Public asdfghjklEnd As Date
+            Public details As String
+            Public recordid As Integer
+        End Class
         '        
         Public Overrides Function Execute(ByVal CP As BaseClasses.CPBaseClass) As Object
-            Dim returnHtml As String = ""
+            Dim returnJson As String = ""
             Try
                 '
-                Dim cal As BaseClasses.CPBlockBaseClass = CP.BlockNew()
                 Dim cs As BaseClasses.CPCSBaseClass = CP.CSNew()
-                Dim sS As String = ""   '   script string
-                'Dim title As String
-                Dim Name As String
-                Dim EventStartDate As Date = Nothing
-                Dim eventStart As String = ""
-                Dim EventEndDate As Date = Nothing
-                Dim EventDetails As String = ""
-                Dim eventEnd As String = ""
-                Dim EventStartTime As Date = Nothing
-                Dim EventEndTime As Date = Nothing
-
+                Dim jsonSerializer As New System.Web.Script.Serialization.JavaScriptSerializer
+                Dim calendarEventList As New List(Of calendarEventClass)
                 '
-                returnHtml = CP.Cache.Read(cacheNamecalendarEventList)
-                If returnHtml = "" Then
+                returnJson = CP.Cache.Read(cacheNamecalendarEventList)
+                If returnJson = "" Then
                     If cs.Open("Calendar Events") Then
                         Do
-                            'title = cs.GetText("title")
-                            Name = cs.GetText("name")
-                            EventStartDate = encodeMinDate(cs.GetDate("StartDate"))
-                            EventEndDate = encodeMinDate(cs.GetDate("EndDate"))
-                            EventStartTime = encodeMinDate(cs.GetDate("StartTime"))
-                            EventEndTime = encodeMinDate(cs.GetDate("EndTime"))
-                            EventDetails = cs.GetText("details")
-                            '
-                            If (EventStartDate > Date.MinValue) And (EventEndDate > Date.MinValue) Then
-                                eventStart = EventStartDate.Year() & "-" & (EventStartDate.Month() + 100).ToString.Substring(1) & "-" & (EventStartDate.Day() + 100).ToString.Substring(1)
-                                eventEnd = EventEndDate.Year() & "-" & (EventEndDate.Month() + 100).ToString.Substring(1) & "-" & (EventEndDate.Day() + 100).ToString.Substring(1)
-
-                                returnHtml &= ",{""title"": """ & CP.Utils.EncodeJavascript(Name) & """,""start"": """ & eventStart & """,""end"": """ & eventEnd & """,""starttime"": """ & EventStartTime & """,""endtime"": """ & EventEndTime & """,""details"": """ & EventDetails & """,""recordid"": """ & cs.GetInteger("id").ToString & """}" '2015-07-13
-                            End If
+                            Dim newEvent As New calendarEventClass
+                            newEvent.asdfghjklEnd = encodeMinDate(cs.GetDate("EndDate").Date())
+                            newEvent.details = cs.GetText("details")
+                            newEvent.recordid = cs.GetInteger("id")
+                            newEvent.start = encodeMinDate(cs.GetDate("StartDate").Date())
+                            newEvent.title = cs.GetText("name")
+                            calendarEventList.Add(newEvent)
                             Call cs.GoNext()
                         Loop While cs.OK()
-                        returnHtml = "[" & returnHtml.Substring(1) & "]"
-
+                        returnJson = jsonSerializer.Serialize(calendarEventList).Replace("asdfghjklEnd", "end")
+                        'returnJson = "[" & returnJson.Substring(1) & "]"
                     End If
                     cs.Close()
-                    Call CP.Cache.Save(cacheNamecalendarEventList, returnHtml, "calendar events")
+                    Call CP.Cache.Save(cacheNamecalendarEventList, returnJson, "calendar events")
                 End If
             Catch ex As Exception
                 CP.Site.ErrorReport("exception in getEvents")
             End Try
-            Return returnHtml
+            Return returnJson
         End Function
         '
         Private Function encodeMinDate(source As Date) As Date

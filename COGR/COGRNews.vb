@@ -62,7 +62,7 @@ Namespace Contensive.Addons.COGR
                                                  & "<br>Email: " & NewsEmail _
                                                  & "<br>" _
                                                  & ""
-                    CP.Email.sendSystem("COGR Listserv Registration", emailBody)
+                    CP.Email.sendSystem("COGR Listserv Registration Notification", emailBody)
                     '
                     CP.Email.sendSystem("COGR Listserv Auto Responder", , actualUserID)
 
