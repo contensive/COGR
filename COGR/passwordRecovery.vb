@@ -51,13 +51,13 @@ Namespace Contensive.Addons.COGR
                             firstUserId = cs.GetInteger("id")
                         End If
                         '
-                        Username = cs.GetText("userName")
+                        email = cs.GetText("email")
                         password = cs.GetText("password")
                         '
 
                         '
                         emailBody &= "" _
-                         & "<br> User Name: " & Username _
+                         & "<br> E-mail: " & email _
                          & "<br> Password: " & password _
                          & "<br>" _
                          & ""

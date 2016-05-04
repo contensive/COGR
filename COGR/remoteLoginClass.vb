@@ -31,11 +31,11 @@ Namespace Contensive.Addons.COGR
 
                 If cs.Open("People", " email = " & CP.Db.EncodeSQLText(email)) Then
 
-                    dbusername = cs.GetText("username")
+                    email = cs.GetText("email")
                     dbpassword = cs.GetText("password")
 
                     If dbpassword = password Then
-                        If CP.User.Login(dbusername, password) Then
+                        If CP.User.Login(email, password) Then
                             ' login ok
                             message = "ok"
                         Else
